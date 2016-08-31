@@ -56,14 +56,12 @@ namespace JLeo.Data
 
         public static void SetEntityMemberValueByExp<T>(T entity, MemberInfo memberInfo, IDataReader reader, int ordinal)
         {
-            var param1 = Expression.Parameter(typeof(Object), "obj");
+            var param1 = Expression.Parameter(typeof(object), "obj");
             var param2 = Expression.Parameter(typeof(IDataReader), "reader");
             var param3 = Expression.Parameter(typeof(int), "ordinal");
-
-            var readerMethod = typeof(EmitHelper).GetMethod("GetString");
-            var value = readerMethod.Invoke(null, new[] { reader as object, ordinal as object });
-
             var pType = (memberInfo as PropertyInfo);
+            var readerMethod = typeof(DataReaderConstant).GetMethod($"Get{pType.PropertyType.Name}");
+            var value = readerMethod.Invoke(null, new object[] { reader, ordinal });
 
             var setMethodInfo = pType.GetSetMethod();
             var invokeObjExpr = Expression.Parameter(typeof(T), "source");//source
